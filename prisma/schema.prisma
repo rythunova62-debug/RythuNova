@@ -27,12 +27,28 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
-  pilot     Pilot?
-  provider  Provider?
-  sessions  Session[]
-  auditLogs AuditLog[] @relation("AdminAuditLogs")
+  pilot       Pilot?
+  provider    Provider?
+  sessions    Session[]
+  auditLogs   AuditLog[]           @relation("AdminAuditLogs")
+  resetTokens PasswordResetToken[]
 
   @@map("users")
+}
+
+// Single-use, time-limited password reset links. The raw token is emailed;
+// only its hash is stored, same pattern as the signup OTP hashes.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
 }
 
 model Pilot {
@@ -106,16 +122,16 @@ model Provider {
 // not separate login accounts (kept distinct from the self-registering Pilot
 // model, which is for individual freelance pilots).
 model ProviderPilot {
-  id               String   @id @default(cuid())
-  providerId       String
-  provider         Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  name             String
-  age              Int?
-  experienceYears  Float    @default(0)
-  acresSprayed     Float    @default(0) // lifetime total, entered/updated by the provider
-  active           Boolean  @default(true)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(cuid())
+  providerId      String
+  provider        Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name            String
+  age             Int?
+  experienceYears Float    @default(0)
+  acresSprayed    Float    @default(0) // lifetime total, entered/updated by the provider
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([providerId])
   @@map("provider_pilots")
@@ -124,12 +140,12 @@ model ProviderPilot {
 // Staging area for the provider signup flow (register -> OTP -> set credentials).
 // Nothing here becomes a real User/Provider row until credentials are created.
 model ProviderSignupRequest {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  name        String
-  address     String
-  pincode     String
-  otpHash     String
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  address      String
+  pincode      String
+  otpHash      String
   otpExpiresAt DateTime
   otpVerified  Boolean  @default(false)
   otpSentAt    DateTime @default(now())
@@ -143,25 +159,25 @@ model ProviderSignupRequest {
 // the Google Sheets sync will create these automatically once that's built,
 // using the same shape, so nothing here needs to change for that later.
 model Order {
-  id             String    @id @default(cuid())
-  farmerName     String
-  farmerPhone    String
-  village        String
-  address        String
-  pincode        String
-  acres          Float
-  cropType       String
-  sprayDetails   String
-  scheduledAt    DateTime
-  status         String    @default("unassigned") // "unassigned" | "assigned" | "completed"
+  id                 String    @id @default(cuid())
+  farmerName         String
+  farmerPhone        String
+  village            String
+  address            String
+  pincode            String
+  acres              Float
+  cropType           String
+  sprayDetails       String
+  scheduledAt        DateTime
+  status             String    @default("unassigned") // "unassigned" | "assigned" | "completed"
   assignedPilotId    String?
   assignedPilot      Pilot?    @relation(fields: [assignedPilotId], references: [id])
   assignedProviderId String?
   assignedProvider   Provider? @relation(fields: [assignedProviderId], references: [id])
-  proofVideoKey  String? // uploaded by whoever completes the order (pilot or provider)
-  completedAt    DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  proofVideoKey      String? // uploaded by whoever completes the order (pilot or provider)
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
   @@index([assignedPilotId])
   @@index([assignedProviderId])
@@ -181,13 +197,13 @@ model Session {
 }
 
 model AuditLog {
-  id            String   @id @default(cuid())
-  adminId       String
-  admin         User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
-  action        String
-  targetUserId  String?
-  metadata      String? // JSON-encoded string (SQLite has no native JSON type)
-  timestamp     DateTime @default(now())
+  id           String   @id @default(cuid())
+  adminId      String
+  admin        User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
+  action       String
+  targetUserId String?
+  metadata     String? // JSON-encoded string (SQLite has no native JSON type)
+  timestamp    DateTime @default(now())
 
   @@map("audit_logs")
 }

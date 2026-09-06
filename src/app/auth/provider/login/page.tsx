@@ -84,6 +84,9 @@ function ProviderLoginForm() {
           <Link href="/auth/provider/register" className="text-emerald-700 hover:underline">
             New provider? Register
           </Link>
+          <Link href="/auth/forgot-password" className="text-stone-500 hover:underline">
+            Forgot password? (use your registered email)
+          </Link>
           <Link href="/" className="text-stone-400 hover:text-stone-600">
             Back to home
           </Link>

@@ -85,6 +85,9 @@ function PilotLoginForm() {
           <Link href="/auth/pilot/signup" className="text-emerald-700 hover:underline">
             New pilot? Sign up
           </Link>
+          <Link href="/auth/forgot-password" className="text-stone-500 hover:underline">
+            Forgot password?
+          </Link>
           <Link href="/" className="text-stone-400 hover:text-stone-600">
             Back to home
           </Link>

@@ -36,6 +36,21 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 // Phase 1 scope only: confirms/edits the location fields captured at signup and
 // marks the pilot's profile complete. The fuller profile (age, DOB, education,
 // experience — see full spec section 4) lands in a later phase once the schema

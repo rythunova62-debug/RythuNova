@@ -72,9 +72,14 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <Link href="/" className="mt-6 block text-center text-sm text-stone-400 hover:text-stone-600">
-          Back to home
-        </Link>
+        <div className="mt-6 flex flex-col items-center gap-2 text-sm">
+          <Link href="/auth/forgot-password" className="text-stone-500 hover:underline">
+            Forgot password?
+          </Link>
+          <Link href="/" className="text-stone-400 hover:text-stone-600">
+            Back to home
+          </Link>
+        </div>
       </div>
     </main>
   );

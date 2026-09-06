@@ -28,3 +28,18 @@ export async function sendOtpEmail(to: string, otp: string) {
     html: `<p>Your RythuNova verification code is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
   });
 }
+
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  if (isPlaceholderSmtp) {
+    console.log(`[dev] Password reset link for ${to}: ${resetUrl}`);
+    return;
+  }
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to,
+    subject: "Reset your RythuNova password",
+    text: `Reset your password: ${resetUrl}\nThis link expires in 30 minutes and can only be used once.`,
+    html: `<p>Click the link below to reset your RythuNova password:</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>This link expires in 30 minutes and can only be used once.</p>`,
+  });
+}
