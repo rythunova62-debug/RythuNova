@@ -32,12 +32,6 @@ export default function Home() {
         >
           Drone Provider Signup
         </Link>
-        <Link
-          href="/auth/admin/login"
-          className="rounded-lg border border-stone-300 px-8 py-3 font-medium text-stone-600 transition hover:bg-stone-50"
-        >
-          Admin Login
-        </Link>
       </div>
     </main>
   );
