@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Pilot } from "@prisma/client";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function ProfileForm({ pilot }: { pilot: Pilot }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: pilot.name,
     phone: pilot.phone,
@@ -45,7 +47,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <Field label="Full name">
+      <Field label={t("common.name")}>
         <input
           required
           value={form.name}
@@ -53,7 +55,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
           className={inputClass}
         />
       </Field>
-      <Field label="Phone">
+      <Field label={t("common.phone")}>
         <input
           required
           value={form.phone}
@@ -61,7 +63,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
           className={inputClass}
         />
       </Field>
-      <Field label="Village">
+      <Field label={t("common.village")}>
         <input
           required
           value={form.village}
@@ -69,7 +71,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
           className={inputClass}
         />
       </Field>
-      <Field label="Mandal">
+      <Field label={t("common.mandal")}>
         <input
           required
           value={form.mandal}
@@ -77,7 +79,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
           className={inputClass}
         />
       </Field>
-      <Field label="District">
+      <Field label={t("common.district")}>
         <input
           required
           value={form.district}
@@ -85,7 +87,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
           className={inputClass}
         />
       </Field>
-      <Field label="Pincode">
+      <Field label={t("common.pincode")}>
         <input
           required
           value={form.pincode}
@@ -102,7 +104,7 @@ export default function ProfileForm({ pilot }: { pilot: Pilot }) {
         disabled={loading}
         className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
       >
-        {loading ? "Saving..." : "Save & Submit"}
+        {loading ? t("common.saving") : t("profileCompletion.saveSubmit")}
       </button>
     </form>
   );

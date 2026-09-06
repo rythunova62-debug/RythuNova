@@ -3,11 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 function VerifyOtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const { t } = useLanguage();
 
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -65,10 +67,9 @@ function VerifyOtpForm() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-emerald-50 px-6 py-16">
       <div className="w-full max-w-sm rounded-xl border border-emerald-100 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">Verify Your Email</h1>
+        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("otp.title")}</h1>
         <p className="mb-6 text-sm text-emerald-700">
-          We sent a 6-digit code to <span className="font-medium">{email}</span>. It expires in
-          10 minutes.
+          {t("otp.sentTo")} <span className="font-medium">{email}</span>. {t("otp.expiresIn")}
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -92,7 +93,7 @@ function VerifyOtpForm() {
             disabled={loading || otp.length !== 6}
             className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
           >
-            {loading ? "Verifying..." : "Verify"}
+            {loading ? t("otp.verifying") : t("otp.verify")}
           </button>
         </form>
 
@@ -101,11 +102,11 @@ function VerifyOtpForm() {
           disabled={resendCooldown > 0}
           className="mt-4 w-full text-center text-sm text-emerald-700 hover:underline disabled:cursor-not-allowed disabled:text-stone-400"
         >
-          {resendCooldown > 0 ? `Resend OTP in ${resendCooldown}s` : "Resend OTP"}
+          {resendCooldown > 0 ? `${t("otp.resendIn")} ${resendCooldown}s` : t("otp.resend")}
         </button>
 
         <Link href="/" className="mt-6 block text-center text-sm text-stone-400 hover:text-stone-600">
-          Back to home
+          {t("common.backHome")}
         </Link>
       </div>
     </main>

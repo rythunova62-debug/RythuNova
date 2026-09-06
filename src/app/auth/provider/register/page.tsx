@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 const inputClass =
   "rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none";
 
 export default function ProviderRegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", address: "", pincode: "" });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -41,14 +43,12 @@ export default function ProviderRegisterPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-emerald-50 px-6 py-16">
       <div className="w-full max-w-md rounded-xl border border-emerald-100 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">Drone Provider Registration</h1>
-        <p className="mb-6 text-sm text-emerald-700">
-          Register your fleet and pilot team with RythuNova.
-        </p>
+        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("providerRegister.title")}</h1>
+        <p className="mb-6 text-sm text-emerald-700">{t("providerRegister.subtitle")}</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Company / Provider name
+            {t("providerRegister.companyName")}
             <input
               required
               value={form.name}
@@ -57,7 +57,7 @@ export default function ProviderRegisterPage() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Email
+            {t("common.email")}
             <input
               type="email"
               required
@@ -67,7 +67,7 @@ export default function ProviderRegisterPage() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Address
+            {t("common.address")}
             <input
               required
               value={form.address}
@@ -76,7 +76,7 @@ export default function ProviderRegisterPage() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Pincode
+            {t("common.pincode")}
             <input
               required
               value={form.pincode}
@@ -93,16 +93,16 @@ export default function ProviderRegisterPage() {
             disabled={loading}
             className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
           >
-            {loading ? "Sending OTP..." : "Continue"}
+            {loading ? t("providerRegister.sendingOtp") : t("common.continue")}
           </button>
         </form>
 
         <div className="mt-6 flex flex-col items-center gap-2 text-sm">
           <Link href="/auth/provider/login" className="text-emerald-700 hover:underline">
-            Already registered? Log in
+            {t("providerRegister.alreadyRegistered")}
           </Link>
           <Link href="/" className="text-stone-400 hover:text-stone-600">
-            Back to home
+            {t("common.backHome")}
           </Link>
         </div>
       </div>

@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function ForgotPasswordPage() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setMessage(null);
     setLoading(true);
     try {
       const res = await fetch("/api/auth/forgot-password", {
@@ -20,12 +21,12 @@ export default function ForgotPasswordPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
       if (!res.ok) {
+        const data = await res.json();
         setError(data.error ?? "Something went wrong");
         return;
       }
-      setMessage(data.message);
+      setSent(true);
     } finally {
       setLoading(false);
     }
@@ -34,17 +35,17 @@ export default function ForgotPasswordPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-stone-50 px-6 py-16">
       <div className="w-full max-w-sm rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-stone-900">Forgot Password</h1>
-        <p className="mb-6 text-sm text-stone-500">
-          Enter your registered email and we&apos;ll send you a reset link.
-        </p>
+        <h1 className="mb-1 text-2xl font-semibold text-stone-900">{t("forgotPassword.title")}</h1>
+        <p className="mb-6 text-sm text-stone-500">{t("forgotPassword.subtitle")}</p>
 
-        {message ? (
-          <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{message}</p>
+        {sent ? (
+          <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+            {t("forgotPassword.sent")}
+          </p>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-              Email
+              {t("common.email")}
               <input
                 type="email"
                 required
@@ -61,13 +62,13 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
             >
-              {loading ? "Sending..." : "Send reset link"}
+              {loading ? t("forgotPassword.sending") : t("forgotPassword.send")}
             </button>
           </form>
         )}
 
         <Link href="/" className="mt-6 block text-center text-sm text-stone-400 hover:text-stone-600">
-          Back to home
+          {t("common.backHome")}
         </Link>
       </div>
     </main>

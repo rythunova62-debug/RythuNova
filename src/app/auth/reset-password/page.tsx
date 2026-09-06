@@ -3,11 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
+  const { t } = useLanguage();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,9 +40,9 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="w-full max-w-sm rounded-xl border border-stone-200 bg-white p-8 text-center shadow-sm">
-        <p className="text-sm text-red-600">This reset link is missing its token.</p>
+        <p className="text-sm text-red-600">{t("resetPassword.missingToken")}</p>
         <Link href="/auth/forgot-password" className="mt-4 inline-block text-sm text-emerald-700 hover:underline">
-          Request a new link
+          {t("resetPassword.requestNew")}
         </Link>
       </div>
     );
@@ -48,12 +50,12 @@ function ResetPasswordForm() {
 
   return (
     <div className="w-full max-w-sm rounded-xl border border-stone-200 bg-white p-8 shadow-sm">
-      <h1 className="mb-1 text-2xl font-semibold text-stone-900">Set New Password</h1>
-      <p className="mb-6 text-sm text-stone-500">Choose a new password for your account.</p>
+      <h1 className="mb-1 text-2xl font-semibold text-stone-900">{t("resetPassword.title")}</h1>
+      <p className="mb-6 text-sm text-stone-500">{t("resetPassword.subtitle")}</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-          New password
+          {t("credentials.newPassword")}
           <input
             type="password"
             required
@@ -64,7 +66,7 @@ function ResetPasswordForm() {
           />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-          Confirm password
+          {t("common.confirmPassword")}
           <input
             type="password"
             required
@@ -81,7 +83,7 @@ function ResetPasswordForm() {
           disabled={loading}
           className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
         >
-          {loading ? "Saving..." : "Reset password"}
+          {loading ? t("common.saving") : t("resetPassword.reset")}
         </button>
       </form>
     </div>

@@ -3,11 +3,13 @@
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 function PilotLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justCreated = searchParams.get("created") === "1";
+  const { t } = useLanguage();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,18 +41,18 @@ function PilotLoginForm() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-emerald-50 px-6 py-16">
       <div className="w-full max-w-sm rounded-xl border border-emerald-100 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">Pilot Login</h1>
-        <p className="mb-6 text-sm text-emerald-700">Welcome back</p>
+        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("pilotLogin.title")}</h1>
+        <p className="mb-6 text-sm text-emerald-700">{t("pilotLogin.subtitle")}</p>
 
         {justCreated && (
           <p className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            Account created successfully. Please log in.
+            {t("common.accountCreated")}
           </p>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Email
+            {t("common.email")}
             <input
               type="email"
               required
@@ -60,7 +62,7 @@ function PilotLoginForm() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Password
+            {t("common.password")}
             <input
               type="password"
               required
@@ -77,19 +79,19 @@ function PilotLoginForm() {
             disabled={loading}
             className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? t("common.signingIn") : t("common.signIn")}
           </button>
         </form>
 
         <div className="mt-6 flex flex-col items-center gap-2 text-sm">
           <Link href="/auth/pilot/signup" className="text-emerald-700 hover:underline">
-            New pilot? Sign up
+            {t("pilotLogin.newPilot")}
           </Link>
           <Link href="/auth/forgot-password" className="text-stone-500 hover:underline">
-            Forgot password?
+            {t("pilotLogin.forgotPassword")}
           </Link>
           <Link href="/" className="text-stone-400 hover:text-stone-600">
-            Back to home
+            {t("common.backHome")}
           </Link>
         </div>
       </div>

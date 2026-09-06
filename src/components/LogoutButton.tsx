@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function LogoutButton({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   async function handleLogout() {
@@ -24,7 +26,7 @@ export default function LogoutButton({ redirectTo }: { redirectTo: string }) {
       disabled={loading}
       className="rounded-md border border-stone-300 px-4 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 disabled:opacity-50"
     >
-      {loading ? "Signing out..." : "Logout"}
+      {loading ? t("common.signingOut") : t("common.logout")}
     </button>
   );
 }

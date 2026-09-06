@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 type Order = {
   id: string;
@@ -43,6 +44,7 @@ function checkVideoDuration(file: File): Promise<number> {
 }
 
 export default function OrdersList({ apiBase }: { apiBase: "/api/pilot/orders" | "/api/provider/orders" }) {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<Order[] | null>(null);
   const [counters, setCounters] = useState<Counters | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
@@ -92,24 +94,24 @@ export default function OrdersList({ apiBase }: { apiBase: "/api/pilot/orders" |
   }
 
   if (orders === null) {
-    return <p className="text-sm text-stone-500">Loading...</p>;
+    return <p className="text-sm text-stone-500">{t("common.loading")}</p>;
   }
 
   return (
     <div className="flex flex-col gap-6">
       {counters && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Total orders" value={counters.total} />
-          <Stat label="Pending" value={counters.pending} />
-          <Stat label="Completed" value={counters.completed} />
-          <Stat label="Acres sprayed" value={counters.totalAcres} />
+          <Stat label={t("orders.total")} value={counters.total} />
+          <Stat label={t("orders.pending")} value={counters.pending} />
+          <Stat label={t("orders.completed")} value={counters.completed} />
+          <Stat label={t("orders.acresSprayed")} value={counters.totalAcres} />
         </div>
       )}
 
       {error && <p className="rounded-md border border-red-100 bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       {orders.length === 0 ? (
-        <p className="text-sm text-stone-500">No orders assigned yet.</p>
+        <p className="text-sm text-stone-500">{t("orders.none")}</p>
       ) : (
         <div className="flex flex-col gap-4">
           {orders.map((o) => (
@@ -123,12 +125,12 @@ export default function OrdersList({ apiBase }: { apiBase: "/api/pilot/orders" |
               <p className="text-sm text-stone-500">{o.farmerPhone}</p>
               <p className="text-sm text-stone-500">{o.address}, {o.village} — {o.pincode}</p>
               <p className="text-sm text-stone-500">{o.acres} acres · {o.cropType} · {o.sprayDetails}</p>
-              <p className="text-sm text-stone-500">Scheduled: {new Date(o.scheduledAt).toLocaleString()}</p>
+              <p className="text-sm text-stone-500">{t("orders.scheduled")}: {new Date(o.scheduledAt).toLocaleString()}</p>
 
               {o.status === "assigned" && (
                 <div className="mt-3 border-t border-stone-100 pt-3">
                   <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-                    Upload proof video (~7-8 seconds) to complete
+                    {t("orders.uploadProof")}
                     <input
                       type="file"
                       accept="video/mp4,video/webm,video/quicktime"
@@ -140,7 +142,7 @@ export default function OrdersList({ apiBase }: { apiBase: "/api/pilot/orders" |
                       className="text-sm"
                     />
                   </label>
-                  {uploadingId === o.id && <p className="mt-1 text-xs text-stone-400">Uploading...</p>}
+                  {uploadingId === o.id && <p className="mt-1 text-xs text-stone-400">{t("orders.uploading")}</p>}
                 </div>
               )}
 
@@ -151,7 +153,7 @@ export default function OrdersList({ apiBase }: { apiBase: "/api/pilot/orders" |
                   rel="noreferrer"
                   className="mt-3 inline-block border-t border-stone-100 pt-3 text-sm text-emerald-700 hover:underline"
                 >
-                  View submitted proof video
+                  {t("orders.viewProof")}
                 </a>
               )}
             </div>

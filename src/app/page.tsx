@@ -1,16 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 export default function Home() {
+  const { t } = useLanguage();
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-gradient-to-b from-emerald-50 to-white px-6 py-16 text-center">
       <div className="flex flex-col gap-3">
         <h1 className="text-4xl font-bold tracking-tight text-emerald-900 sm:text-5xl">
-          RythuNova
+          {t("home.title")}
         </h1>
-        <p className="max-w-md text-balance text-emerald-700">
-          Drone-based crop spraying, connecting West Godavari farmers with
-          trained drone pilots.
-        </p>
+        <p className="max-w-md text-balance text-emerald-700">{t("home.tagline")}</p>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row">
@@ -18,19 +20,19 @@ export default function Home() {
           href="/auth/pilot/signup"
           className="rounded-lg bg-emerald-700 px-8 py-3 font-medium text-white shadow-sm transition hover:bg-emerald-800"
         >
-          Pilot Signup
+          {t("home.pilotSignup")}
         </Link>
         <Link
           href="/auth/pilot/login"
           className="rounded-lg border border-emerald-700 px-8 py-3 font-medium text-emerald-800 transition hover:bg-emerald-50"
         >
-          Pilot Login
+          {t("home.pilotLogin")}
         </Link>
         <Link
           href="/auth/provider/register"
           className="rounded-lg border border-emerald-700 px-8 py-3 font-medium text-emerald-800 transition hover:bg-emerald-50"
         >
-          Drone Provider Signup
+          {t("home.providerSignup")}
         </Link>
       </div>
     </main>

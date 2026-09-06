@@ -2,11 +2,13 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLanguage } from "@/lib/i18n/LanguageProvider";
 
 function CreateCredentialsForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
+  const { t } = useLanguage();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,14 +39,14 @@ function CreateCredentialsForm() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-emerald-50 px-6 py-16">
       <div className="w-full max-w-sm rounded-xl border border-emerald-100 bg-white p-8 shadow-sm">
-        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">Set Your Password</h1>
+        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("credentials.title")}</h1>
         <p className="mb-6 text-sm text-emerald-700">
           Step 3 of 3 — You&apos;ll log in with {email} and this password.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Password
+            {t("credentials.newPassword")}
             <input
               type="password"
               required
@@ -55,7 +57,7 @@ function CreateCredentialsForm() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
-            Confirm password
+            {t("common.confirmPassword")}
             <input
               type="password"
               required
@@ -72,7 +74,7 @@ function CreateCredentialsForm() {
             disabled={loading}
             className="mt-2 rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:opacity-50"
           >
-            {loading ? "Creating account..." : "Create account"}
+            {loading ? t("credentials.creatingAccount") : t("credentials.createAccount")}
           </button>
         </form>
       </div>
