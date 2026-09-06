@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import Hero from "@/components/hero3d/Hero";
 
 export default function Home() {
   const { t } = useLanguage();
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-gradient-to-b from-emerald-50 to-white px-6 py-16 text-center">
+    <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-gradient-to-b from-emerald-50 to-white px-6 py-12 text-center">
+      <div className="w-full max-w-md">
+        <Hero />
+      </div>
+
       <div className="flex flex-col gap-3">
         <h1 className="text-4xl font-bold tracking-tight text-emerald-900 sm:text-5xl">
           {t("home.title")}
