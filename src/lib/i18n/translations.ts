@@ -111,6 +111,7 @@ export const translations = {
 
   "orders.myOrders": { en: "My Orders", te: "నా ఆర్డర్లు" },
   "orders.dashboard": { en: "Dashboard", te: "డాష్‌బోర్డ్" },
+  "common.backToDashboard": { en: "Back to Dashboard", te: "డాష్‌బోర్డ్‌కి తిరిగి వెళ్ళండి" },
   "orders.total": { en: "Total orders", te: "మొత్తం ఆర్డర్లు" },
   "orders.pending": { en: "Pending", te: "పెండింగ్‌లో" },
   "orders.completed": { en: "Completed", te: "పూర్తయింది" },
