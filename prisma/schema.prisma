@@ -1,0 +1,195 @@
+// Local dev uses SQLite (provider = "sqlite") so Phase 1 runs with zero setup.
+// Switch provider to "postgresql" and DATABASE_URL to the Neon connection string
+// when ready to move to production — no field changes needed to migrate.
+//
+// Role / status fields are plain Strings (not Prisma enums) because SQLite has
+// no native enum type. Valid values are enforced in app code via the unions in
+// src/lib/types.ts. This keeps the schema portable across both providers.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  role          String // "admin" | "pilot" | "provider"
+  email         String    @unique
+  username      String?   @unique // providers log in with a username instead of email
+  passwordHash  String
+  accountStatus String    @default("active") // "active" | "blocked" — not in the original Phase 1 schema, added because /block needs to be distinct from /delete (soft delete via deletedAt)
+  lastLoginAt   DateTime?
+  lastLoginIp   String?
+  lastLogoutAt  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  pilot     Pilot?
+  provider  Provider?
+  sessions  Session[]
+  auditLogs AuditLog[] @relation("AdminAuditLogs")
+
+  @@map("users")
+}
+
+model Pilot {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name               String
+  phone              String
+  village            String
+  mandal             String
+  district           String
+  pincode            String? // not in the original schema — needed for order-routing (see Order model below)
+  licenceFileKey     String? // storage key — see src/lib/storage.ts (local disk for now, swaps to R2 later)
+  photoFileKey       String?
+  verificationStatus String   @default("pending") // "pending" | "verified" | "rejected"
+  rejectionReason    String? // shown to the pilot when verificationStatus = "rejected"
+  profileComplete    Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  orders Order[]
+
+  @@map("pilots")
+}
+
+// Staging area for the pilot signup flow (register + uploads -> OTP -> set
+// password). Nothing here becomes a real User/Pilot row until the password is set.
+model PilotSignupRequest {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  phone          String
+  village        String
+  mandal         String
+  district       String
+  licenceFileKey String
+  photoFileKey   String
+  otpHash        String
+  otpExpiresAt   DateTime
+  otpVerified    Boolean  @default(false)
+  otpSentAt      DateTime @default(now())
+  otpAttempts    Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@map("pilot_signup_requests")
+}
+
+model Provider {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                  String
+  address               String
+  pincode               String
+  coverageRadiusKm      Int      @default(0)
+  totalDrones           Int      @default(0)
+  acresPerDayCapacity   Int      @default(0)
+  pricePerAcre          Float    @default(0)
+  bulkDiscountThreshold Int? // acres above which the discount below applies
+  bulkDiscountPercent   Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  pilots ProviderPilot[]
+  orders Order[]
+
+  @@map("providers")
+}
+
+// A provider's own pilot roster — plain data rows they maintain themselves,
+// not separate login accounts (kept distinct from the self-registering Pilot
+// model, which is for individual freelance pilots).
+model ProviderPilot {
+  id               String   @id @default(cuid())
+  providerId       String
+  provider         Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  name             String
+  age              Int?
+  experienceYears  Float    @default(0)
+  acresSprayed     Float    @default(0) // lifetime total, entered/updated by the provider
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([providerId])
+  @@map("provider_pilots")
+}
+
+// Staging area for the provider signup flow (register -> OTP -> set credentials).
+// Nothing here becomes a real User/Provider row until credentials are created.
+model ProviderSignupRequest {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  address     String
+  pincode     String
+  otpHash     String
+  otpExpiresAt DateTime
+  otpVerified  Boolean  @default(false)
+  otpSentAt    DateTime @default(now())
+  otpAttempts  Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@map("provider_signup_requests")
+}
+
+// A farmer booking. Created manually by admin for now (POST /api/admin/orders) —
+// the Google Sheets sync will create these automatically once that's built,
+// using the same shape, so nothing here needs to change for that later.
+model Order {
+  id             String    @id @default(cuid())
+  farmerName     String
+  farmerPhone    String
+  village        String
+  address        String
+  pincode        String
+  acres          Float
+  cropType       String
+  sprayDetails   String
+  scheduledAt    DateTime
+  status         String    @default("unassigned") // "unassigned" | "assigned" | "completed"
+  assignedPilotId    String?
+  assignedPilot      Pilot?    @relation(fields: [assignedPilotId], references: [id])
+  assignedProviderId String?
+  assignedProvider   Provider? @relation(fields: [assignedProviderId], references: [id])
+  proofVideoKey  String? // uploaded by whoever completes the order (pilot or provider)
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([assignedPilotId])
+  @@index([assignedProviderId])
+  @@map("orders")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  adminId       String
+  admin         User     @relation("AdminAuditLogs", fields: [adminId], references: [id])
+  action        String
+  targetUserId  String?
+  metadata      String? // JSON-encoded string (SQLite has no native JSON type)
+  timestamp     DateTime @default(now())
+
+  @@map("audit_logs")
+}
