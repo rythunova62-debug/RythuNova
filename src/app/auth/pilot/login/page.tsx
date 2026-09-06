@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import VideoBackground from "@/components/VideoBackground";
 
 function PilotLoginForm() {
   const router = useRouter();
@@ -39,8 +40,9 @@ function PilotLoginForm() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center bg-emerald-50 px-6 py-16">
-      <div className="w-full max-w-sm rounded-xl border border-emerald-100 bg-white p-8 shadow-sm">
+    <main className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16">
+      <VideoBackground src="/videos/pilot-login.mp4" />
+      <div className="w-full max-w-sm rounded-xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-md">
         <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("pilotLogin.title")}</h1>
         <p className="mb-6 text-sm text-emerald-700">{t("pilotLogin.subtitle")}</p>
 
@@ -90,7 +92,7 @@ function PilotLoginForm() {
           <Link href="/auth/forgot-password" className="text-stone-500 hover:underline">
             {t("pilotLogin.forgotPassword")}
           </Link>
-          <Link href="/" className="text-stone-400 hover:text-stone-600">
+          <Link href="/" className="text-stone-500 hover:text-stone-700">
             {t("common.backHome")}
           </Link>
         </div>

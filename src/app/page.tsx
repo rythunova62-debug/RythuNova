@@ -2,26 +2,23 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import HeroIllustration from "@/components/HeroIllustration";
+import VideoBackground from "@/components/VideoBackground";
 
 export default function Home() {
   const { t } = useLanguage();
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-10 bg-gradient-to-b from-emerald-50 to-white px-6 py-12 text-center">
-      <div className="w-full max-w-md animate-fade-in-up">
-        <HeroIllustration />
-      </div>
-
+    <main className="relative isolate flex flex-1 flex-col items-center justify-center gap-10 overflow-hidden px-6 py-12 text-center">
+      <VideoBackground src="/videos/home.mp4" overlayClassName="bg-emerald-950/50" />
       <div className="flex flex-col gap-3">
         <h1
-          className="animate-fade-in-up text-4xl font-bold tracking-tight text-emerald-900 sm:text-5xl"
+          className="animate-fade-in-up text-4xl font-bold tracking-tight text-white drop-shadow-lg sm:text-5xl"
           style={{ animationDelay: "100ms" }}
         >
           {t("home.title")}
         </h1>
         <p
-          className="animate-fade-in-up max-w-md text-balance text-emerald-700"
+          className="animate-fade-in-up max-w-md text-balance text-emerald-50 drop-shadow"
           style={{ animationDelay: "220ms" }}
         >
           {t("home.tagline")}
@@ -34,13 +31,13 @@ export default function Home() {
       >
         <Link
           href="/auth/pilot/login"
-          className="btn-glow rounded-lg bg-emerald-700 px-8 py-3 font-medium text-white"
+          className="btn-glow rounded-lg bg-emerald-600 px-8 py-3 font-medium text-white shadow-lg"
         >
           {t("home.pilotLogin")}
         </Link>
         <Link
           href="/auth/provider/login"
-          className="btn-glow rounded-lg border border-emerald-700 bg-white px-8 py-3 font-medium text-emerald-800"
+          className="btn-glow rounded-lg border border-white/70 bg-white/90 px-8 py-3 font-medium text-emerald-800 shadow-lg backdrop-blur"
         >
           {t("home.providerLogin")}
         </Link>
