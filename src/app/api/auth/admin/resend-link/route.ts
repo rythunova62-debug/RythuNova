@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { adminRegisterSchema } from "@/lib/validation";
+import { otpResendSchema } from "@/lib/validation";
 import {
   generateVerificationToken,
   hashVerificationToken,
@@ -9,12 +9,9 @@ import {
 } from "@/lib/verification-token";
 import { sendSignupVerificationEmail } from "@/lib/mail";
 
-// Step 1 of team-member sign-up: record the request and email a verification
-// link. No account exists until the link is clicked and a password is set,
-// which is the same shape as the pilot and provider signups.
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
-  const parsed = adminRegisterSchema.safeParse(body);
+  const parsed = otpResendSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid input" },
@@ -23,20 +20,12 @@ export async function POST(request: Request) {
   }
 
   const { email } = parsed.data;
-
-  const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) {
-    return NextResponse.json(
-      { error: "An account with this email already exists" },
-      { status: 409 }
-    );
+  const existing = await prisma.adminSignupRequest.findUnique({ where: { email } });
+  if (!existing) {
+    return NextResponse.json({ error: "No pending signup found for this email" }, { status: 404 });
   }
 
-  const existingRequest = await prisma.adminSignupRequest.findUnique({ where: { email } });
-  if (
-    existingRequest &&
-    Date.now() - existingRequest.verificationSentAt.getTime() < VERIFICATION_RESEND_COOLDOWN_MS
-  ) {
+  if (Date.now() - existing.verificationSentAt.getTime() < VERIFICATION_RESEND_COOLDOWN_MS) {
     return NextResponse.json(
       { error: "Please wait before requesting another verification email" },
       { status: 429 }
@@ -47,15 +36,14 @@ export async function POST(request: Request) {
   const verificationTokenHash = hashVerificationToken(token);
   const verificationExpiresAt = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
 
-  await prisma.adminSignupRequest.upsert({
+  await prisma.adminSignupRequest.update({
     where: { email },
-    update: {
+    data: {
       verificationTokenHash,
       verificationExpiresAt,
-      verified: false,
       verificationSentAt: new Date(),
+      verified: false,
     },
-    create: { email, verificationTokenHash, verificationExpiresAt },
   });
 
   const origin = new URL(request.url).origin;

@@ -156,6 +156,18 @@ model ProviderSignupRequest {
   @@map("provider_signup_requests")
 }
 
+model AdminSignupRequest {
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  verificationTokenHash String
+  verificationExpiresAt DateTime
+  verified              Boolean  @default(false)
+  verificationSentAt    DateTime @default(now())
+  createdAt             DateTime @default(now())
+
+  @@map("admin_signup_requests")
+}
+
 // A farmer booking. Created manually by admin for now (POST /api/admin/orders) —
 // the Google Sheets sync will create these automatically once that's built,
 // using the same shape, so nothing here needs to change for that later.
