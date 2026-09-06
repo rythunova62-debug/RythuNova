@@ -96,32 +96,18 @@ export default function PilotSignupPage() {
             <input required value={form.district} onChange={(e) => update("district", e.target.value)} className={inputClass} />
           </Field>
 
-          <Field label="Drone driving licence (photo of the document)">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required
-              onChange={(e) => handleFile(e, setLicence, setLicencePreview)}
-              className="text-sm"
-            />
-            {licencePreview && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={licencePreview} alt="Licence preview" className="mt-2 h-32 w-full rounded-md border border-stone-200 object-cover" />
-            )}
-          </Field>
-          <Field label="Your photo (clear face photo)">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required
-              onChange={(e) => handleFile(e, setPhoto, setPhotoPreview)}
-              className="text-sm"
-            />
-            {photoPreview && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={photoPreview} alt="Pilot photo preview" className="mt-2 h-32 w-full rounded-md border border-stone-200 object-cover" />
-            )}
-          </Field>
+          <UploadBox
+            label="Drone driving licence"
+            hint="Upload a clear photo of the licence document"
+            preview={licencePreview}
+            onChange={(e) => handleFile(e, setLicence, setLicencePreview)}
+          />
+          <UploadBox
+            label="Your photo"
+            hint="A clear face photo, used to confirm your identity"
+            preview={photoPreview}
+            onChange={(e) => handleFile(e, setPhoto, setPhotoPreview)}
+          />
 
           {error && <p className="col-span-2 text-sm text-red-600">{error}</p>}
 
@@ -161,5 +147,51 @@ function Field({
       {label}
       {children}
     </label>
+  );
+}
+
+function UploadBox({
+  label,
+  hint,
+  preview,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  preview: string | null;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-sm font-medium text-stone-700">{label}</span>
+      <label
+        className={`relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed px-4 py-6 text-center transition ${
+          preview
+            ? "border-emerald-300 bg-emerald-50/50"
+            : "border-emerald-300 bg-emerald-50 hover:border-emerald-500 hover:bg-emerald-100"
+        }`}
+      >
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          required
+          onChange={onChange}
+          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        />
+        {preview ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={preview} alt={`${label} preview`} className="h-32 w-full rounded-md object-cover" />
+            <span className="mt-2 text-xs font-medium text-emerald-700">Tap to change</span>
+          </>
+        ) : (
+          <>
+            <span className="text-2xl">📄</span>
+            <span className="mt-1 text-sm font-medium text-emerald-800">+ Add document</span>
+            <span className="mt-1 text-xs text-emerald-600">{hint}</span>
+          </>
+        )}
+      </label>
+    </div>
   );
 }
