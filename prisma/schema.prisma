@@ -1,18 +1,16 @@
-// Local dev uses SQLite (provider = "sqlite") so Phase 1 runs with zero setup.
-// Switch provider to "postgresql" and DATABASE_URL to the Neon connection string
-// when ready to move to production — no field changes needed to migrate.
-//
-// Role / status fields are plain Strings (not Prisma enums) because SQLite has
-// no native enum type. Valid values are enforced in app code via the unions in
-// src/lib/types.ts. This keeps the schema portable across both providers.
+// Postgres (Neon). Role/status fields are plain Strings rather than Prisma
+// enums — carried over from when this ran on SQLite dev, which has no native
+// enum type. Valid values are enforced in app code via the unions in
+// src/lib/types.ts.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {

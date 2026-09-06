@@ -1,14 +1,14 @@
-import { mkdir, writeFile, readFile, stat } from "fs/promises";
-import path from "path";
 import { randomUUID } from "crypto";
+import { createClient } from "@supabase/supabase-js";
 
-// Local-disk storage for dev, kept behind this interface so swapping to
-// Cloudflare R2 later (production) only means rewriting this file — nothing
-// that calls saveUploadedFile/readStoredFile/deleteStoredFile changes.
-// Files live outside `public/`, so nothing here is served by static hosting;
-// they're only reachable through the authorized /api/files/[...key] route.
+// Supabase Storage (private bucket) — kept behind this interface so nothing
+// that calls saveUploadedFile/saveUploadedVideo/readStoredFile needs to
+// change if storage is swapped again later (e.g. to R2). Files are only
+// reachable through the authorized /api/files/[...key] route — the bucket
+// itself is private, not served directly.
 
-const UPLOAD_ROOT = path.join(process.cwd(), "uploads");
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SECRET_KEY!);
+const BUCKET = process.env.SUPABASE_STORAGE_BUCKET!;
 
 const IMAGE_MIME_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -44,7 +44,7 @@ export async function saveUploadedFile(
     throw new UploadValidationError("File is empty");
   }
 
-  return writeToDisk(file, folder, ext);
+  return uploadToSupabase(file, folder, ext);
 }
 
 export async function saveUploadedVideo(file: File): Promise<string> {
@@ -59,22 +59,27 @@ export async function saveUploadedVideo(file: File): Promise<string> {
     throw new UploadValidationError("File is empty");
   }
 
-  return writeToDisk(file, "proofs", ext);
+  return uploadToSupabase(file, "proofs", ext);
 }
 
-async function writeToDisk(file: File, folder: string, ext: string): Promise<string> {
+async function uploadToSupabase(file: File, folder: string, ext: string): Promise<string> {
   const key = `${folder}/${randomUUID()}.${ext}`;
-  const fullPath = path.join(UPLOAD_ROOT, key);
-
-  await mkdir(path.dirname(fullPath), { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(fullPath, buffer);
+
+  const { error } = await supabase.storage.from(BUCKET).upload(key, buffer, {
+    contentType: file.type,
+    upsert: false,
+  });
+
+  if (error) {
+    throw new Error(`Storage upload failed: ${error.message}`);
+  }
 
   return key;
 }
 
-// Prevents path traversal: only allows the exact folder/uuid.ext shape this
-// module generates, and resolves must stay inside UPLOAD_ROOT.
+// Prevents path traversal / arbitrary key access: only allows the exact
+// folder/uuid.ext shape this module generates.
 const SAFE_KEY = /^(licences|photos|proofs)\/[a-f0-9-]{36}\.(jpg|png|webp|mp4|webm|mov)$/;
 
 const CONTENT_TYPES: Record<string, string> = {
@@ -89,17 +94,11 @@ const CONTENT_TYPES: Record<string, string> = {
 export async function readStoredFile(key: string): Promise<{ buffer: Buffer; contentType: string } | null> {
   if (!SAFE_KEY.test(key)) return null;
 
-  const fullPath = path.join(UPLOAD_ROOT, key);
-  if (!fullPath.startsWith(UPLOAD_ROOT)) return null;
+  const { data, error } = await supabase.storage.from(BUCKET).download(key);
+  if (error || !data) return null;
 
-  try {
-    await stat(fullPath);
-  } catch {
-    return null;
-  }
-
-  const buffer = await readFile(fullPath);
-  const ext = path.extname(key).slice(1);
+  const buffer = Buffer.from(await data.arrayBuffer());
+  const ext = key.split(".").pop() ?? "";
   const contentType = CONTENT_TYPES[ext] ?? "application/octet-stream";
 
   return { buffer, contentType };
