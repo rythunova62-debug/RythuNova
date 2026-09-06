@@ -14,6 +14,7 @@ type Pilot = {
   photoFileKey: string | null;
   verificationStatus: string;
   rejectionReason: string | null;
+  rating: number | null;
   profileComplete: boolean;
   user: { email: string; accountStatus: string; deletedAt: string | null };
 };
@@ -70,6 +71,17 @@ export default function PilotsTable() {
     act(id, "reject", { reason });
   }
 
+  function handleRate(id: string, current: number | null) {
+    const input = window.prompt("Rate this pilot (1-5):", current ? String(current) : "");
+    if (!input) return;
+    const rating = Number(input);
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+      setError("Rating must be a number between 1 and 5");
+      return;
+    }
+    act(id, "rate", { rating });
+  }
+
   function handleBlock(id: string) {
     if (!window.confirm("Block this pilot? They will be unable to log in.")) return;
     act(id, "block");
@@ -99,6 +111,7 @@ export default function PilotsTable() {
             <th className="px-4 py-3 font-medium">Location</th>
             <th className="px-4 py-3 font-medium">Documents</th>
             <th className="px-4 py-3 font-medium">Status</th>
+            <th className="px-4 py-3 font-medium">Rating</th>
             <th className="px-4 py-3 font-medium">Account</th>
             <th className="px-4 py-3 font-medium">Actions</th>
           </tr>
@@ -131,6 +144,9 @@ export default function PilotsTable() {
                 )}
               </td>
               <td className="px-4 py-3 text-stone-600">
+                {p.rating ? `★ ${p.rating}` : <span className="text-stone-400">Not rated</span>}
+              </td>
+              <td className="px-4 py-3 text-stone-600">
                 {p.user.deletedAt ? "deleted" : p.user.accountStatus}
               </td>
               <td className="px-4 py-3">
@@ -148,6 +164,13 @@ export default function PilotsTable() {
                     className="rounded-md border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 hover:bg-stone-100 disabled:opacity-40"
                   >
                     Reject
+                  </button>
+                  <button
+                    disabled={busyId === p.id}
+                    onClick={() => handleRate(p.id, p.rating)}
+                    className="rounded-md border border-stone-300 px-2 py-1 text-xs font-medium text-stone-700 hover:bg-stone-100 disabled:opacity-40"
+                  >
+                    Rate
                   </button>
                   <button
                     disabled={busyId === p.id || !!p.user.deletedAt}

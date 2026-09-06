@@ -65,6 +65,7 @@ model Pilot {
   photoFileKey       String?
   verificationStatus String   @default("pending") // "pending" | "verified" | "rejected"
   rejectionReason    String? // shown to the pilot when verificationStatus = "rejected"
+  rating             Float? // 1-5, set only by admin — not derived from farmer feedback
   profileComplete    Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

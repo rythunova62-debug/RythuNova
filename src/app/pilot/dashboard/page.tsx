@@ -52,9 +52,14 @@ export default async function PilotDashboardPage() {
         </div>
 
         <div className="rounded-lg border border-emerald-100 bg-white p-6 shadow-sm">
-          <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${status.tone}`}>
-            {status.label}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${status.tone}`}>
+              {status.label}
+            </span>
+            {pilot.rating != null && (
+              <span className="text-xs font-medium text-amber-600">★ {pilot.rating} rating</span>
+            )}
+          </div>
           <p className="mt-3 text-sm text-stone-600">{status.message}</p>
           {pilot.verificationStatus === "rejected" && pilot.rejectionReason && (
             <p className="mt-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">

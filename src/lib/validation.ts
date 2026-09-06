@@ -68,6 +68,10 @@ export const rejectPilotSchema = z.object({
   reason: z.string().min(3, "A reason is required"),
 });
 
+export const ratePilotSchema = z.object({
+  rating: z.coerce.number().min(1).max(5),
+});
+
 // --- Provider portal ---
 
 const username = z
