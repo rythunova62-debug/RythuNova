@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { providerRegisterSchema } from "@/lib/validation";
+import { otpResendSchema } from "@/lib/validation";
 import {
   generateVerificationToken,
   hashVerificationToken,
@@ -11,7 +11,7 @@ import { sendSignupVerificationEmail } from "@/lib/mail";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
-  const parsed = providerRegisterSchema.safeParse(body);
+  const parsed = otpResendSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Invalid input" },
@@ -19,21 +19,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const { name, email, address, pincode } = parsed.data;
-
-  const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) {
-    return NextResponse.json(
-      { error: "An account with this email already exists" },
-      { status: 409 }
-    );
+  const { email } = parsed.data;
+  const existing = await prisma.providerSignupRequest.findUnique({ where: { email } });
+  if (!existing) {
+    return NextResponse.json({ error: "No pending signup found for this email" }, { status: 404 });
   }
 
-  const existingRequest = await prisma.providerSignupRequest.findUnique({ where: { email } });
-  if (
-    existingRequest &&
-    Date.now() - existingRequest.verificationSentAt.getTime() < VERIFICATION_RESEND_COOLDOWN_MS
-  ) {
+  if (Date.now() - existing.verificationSentAt.getTime() < VERIFICATION_RESEND_COOLDOWN_MS) {
     return NextResponse.json(
       { error: "Please wait before requesting another verification email" },
       { status: 429 }
@@ -44,18 +36,9 @@ export async function POST(request: Request) {
   const verificationTokenHash = hashVerificationToken(token);
   const verificationExpiresAt = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
 
-  await prisma.providerSignupRequest.upsert({
+  await prisma.providerSignupRequest.update({
     where: { email },
-    update: {
-      name,
-      address,
-      pincode,
-      verificationTokenHash,
-      verificationExpiresAt,
-      verified: false,
-      verificationSentAt: new Date(),
-    },
-    create: { email, name, address, pincode, verificationTokenHash, verificationExpiresAt },
+    data: { verificationTokenHash, verificationExpiresAt, verificationSentAt: new Date(), verified: false },
   });
 
   const origin = new URL(request.url).origin;

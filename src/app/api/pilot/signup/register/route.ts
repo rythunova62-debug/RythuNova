@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { pilotRegisterSchema } from "@/lib/validation";
-import { generateOtp, hashOtp, OTP_TTL_MS, OTP_RESEND_COOLDOWN_MS } from "@/lib/otp";
-import { sendOtpEmail } from "@/lib/mail";
+import {
+  generateVerificationToken,
+  hashVerificationToken,
+  VERIFICATION_TOKEN_TTL_MS,
+  VERIFICATION_RESEND_COOLDOWN_MS,
+} from "@/lib/verification-token";
+import { sendSignupVerificationEmail } from "@/lib/mail";
 import { saveUploadedFile, UploadValidationError } from "@/lib/storage";
 
 export async function POST(request: Request) {
@@ -45,9 +50,12 @@ export async function POST(request: Request) {
   }
 
   const existingRequest = await prisma.pilotSignupRequest.findUnique({ where: { email } });
-  if (existingRequest && Date.now() - existingRequest.otpSentAt.getTime() < OTP_RESEND_COOLDOWN_MS) {
+  if (
+    existingRequest &&
+    Date.now() - existingRequest.verificationSentAt.getTime() < VERIFICATION_RESEND_COOLDOWN_MS
+  ) {
     return NextResponse.json(
-      { error: "Please wait before requesting another OTP" },
+      { error: "Please wait before requesting another verification email" },
       { status: 429 }
     );
   }
@@ -64,9 +72,9 @@ export async function POST(request: Request) {
     throw err;
   }
 
-  const otp = generateOtp();
-  const otpHash = hashOtp(otp);
-  const otpExpiresAt = new Date(Date.now() + OTP_TTL_MS);
+  const token = generateVerificationToken();
+  const verificationTokenHash = hashVerificationToken(token);
+  const verificationExpiresAt = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
 
   await prisma.pilotSignupRequest.upsert({
     where: { email },
@@ -78,11 +86,10 @@ export async function POST(request: Request) {
       district,
       licenceFileKey,
       photoFileKey,
-      otpHash,
-      otpExpiresAt,
-      otpVerified: false,
-      otpSentAt: new Date(),
-      otpAttempts: 0,
+      verificationTokenHash,
+      verificationExpiresAt,
+      verified: false,
+      verificationSentAt: new Date(),
     },
     create: {
       email,
@@ -93,12 +100,14 @@ export async function POST(request: Request) {
       district,
       licenceFileKey,
       photoFileKey,
-      otpHash,
-      otpExpiresAt,
+      verificationTokenHash,
+      verificationExpiresAt,
     },
   });
 
-  await sendOtpEmail(email, otp);
+  const origin = new URL(request.url).origin;
+  const verifyUrl = `${origin}/api/pilot/signup/verify-link?email=${encodeURIComponent(email)}&token=${token}`;
+  await sendSignupVerificationEmail(email, verifyUrl);
 
   return NextResponse.json({ ok: true });
 }

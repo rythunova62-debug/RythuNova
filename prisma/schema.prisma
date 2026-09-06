@@ -75,24 +75,24 @@ model Pilot {
   @@map("pilots")
 }
 
-// Staging area for the pilot signup flow (register + uploads -> OTP -> set
-// password). Nothing here becomes a real User/Pilot row until the password is set.
+// Staging area for the pilot signup flow (register + uploads -> emailed
+// verification link -> set password). Nothing here becomes a real User/Pilot
+// row until the password is set.
 model PilotSignupRequest {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  name           String
-  phone          String
-  village        String
-  mandal         String
-  district       String
-  licenceFileKey String
-  photoFileKey   String
-  otpHash        String
-  otpExpiresAt   DateTime
-  otpVerified    Boolean  @default(false)
-  otpSentAt      DateTime @default(now())
-  otpAttempts    Int      @default(0)
-  createdAt      DateTime @default(now())
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  name                  String
+  phone                 String
+  village               String
+  mandal                String
+  district              String
+  licenceFileKey        String
+  photoFileKey          String
+  verificationTokenHash String
+  verificationExpiresAt DateTime
+  verified              Boolean   @default(false)
+  verificationSentAt    DateTime  @default(now())
+  createdAt             DateTime  @default(now())
 
   @@map("pilot_signup_requests")
 }
@@ -138,20 +138,20 @@ model ProviderPilot {
   @@map("provider_pilots")
 }
 
-// Staging area for the provider signup flow (register -> OTP -> set credentials).
-// Nothing here becomes a real User/Provider row until credentials are created.
+// Staging area for the provider signup flow (register -> emailed verification
+// link -> set credentials). Nothing here becomes a real User/Provider row
+// until credentials are created.
 model ProviderSignupRequest {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String
-  address      String
-  pincode      String
-  otpHash      String
-  otpExpiresAt DateTime
-  otpVerified  Boolean  @default(false)
-  otpSentAt    DateTime @default(now())
-  otpAttempts  Int      @default(0)
-  createdAt    DateTime @default(now())
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  name                  String
+  address               String
+  pincode               String
+  verificationTokenHash String
+  verificationExpiresAt DateTime
+  verified              Boolean  @default(false)
+  verificationSentAt    DateTime @default(now())
+  createdAt             DateTime @default(now())
 
   @@map("provider_signup_requests")
 }

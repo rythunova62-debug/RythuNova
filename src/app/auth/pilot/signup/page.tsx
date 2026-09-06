@@ -64,7 +64,7 @@ export default function PilotSignupPage() {
         setError(data.error ?? "Registration failed");
         return;
       }
-      router.push(`/auth/pilot/verify-otp?email=${encodeURIComponent(form.email)}`);
+      router.push(`/auth/pilot/check-email?email=${encodeURIComponent(form.email)}`);
     } finally {
       setLoading(false);
     }

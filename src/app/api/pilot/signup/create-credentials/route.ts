@@ -18,9 +18,9 @@ export async function POST(request: Request) {
   const { email, password } = parsed.data;
 
   const signupRequest = await prisma.pilotSignupRequest.findUnique({ where: { email } });
-  if (!signupRequest || !signupRequest.otpVerified) {
+  if (!signupRequest || !signupRequest.verified) {
     return NextResponse.json(
-      { error: "Email not verified. Please complete OTP verification first." },
+      { error: "Email not verified. Please click the verification link sent to your email first." },
       { status: 403 }
     );
   }

@@ -12,20 +12,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendOtpEmail(to: string, otp: string) {
+export async function sendSignupVerificationEmail(to: string, verifyUrl: string) {
   // Real SMTP creds aren't configured yet — log instead of failing the request
   // so the signup flow can still be exercised end to end in dev.
   if (isPlaceholderSmtp) {
-    console.log(`[dev] OTP for ${to}: ${otp}`);
+    console.log(`[dev] Signup verification link for ${to}: ${verifyUrl}`);
     return;
   }
 
   await transporter.sendMail({
     from: process.env.SMTP_FROM,
     to,
-    subject: "Your RythuNova verification code",
-    text: `Your OTP is ${otp}. It expires in 10 minutes.`,
-    html: `<p>Your RythuNova verification code is <strong>${otp}</strong>.</p><p>It expires in 10 minutes.</p>`,
+    subject: "Verify your email for RythuNova",
+    text: `Click to verify your email and continue signup: ${verifyUrl}\nThis link expires in 30 minutes and can only be used once.`,
+    html: `<p>Click the button below to verify your email and continue your RythuNova signup:</p><p><a href="${verifyUrl}" style="display:inline-block;padding:10px 20px;background:#047857;color:#fff;text-decoration:none;border-radius:6px;">Verify Email</a></p><p>Or copy this link: ${verifyUrl}</p><p>This link expires in 30 minutes and can only be used once.</p>`,
   });
 }
 

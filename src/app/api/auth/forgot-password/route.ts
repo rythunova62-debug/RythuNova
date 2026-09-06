@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { forgotPasswordSchema } from "@/lib/validation";
-import { generateResetToken, hashResetToken, RESET_TOKEN_TTL_MS } from "@/lib/password-reset";
+import { generateVerificationToken, hashVerificationToken, VERIFICATION_TOKEN_TTL_MS } from "@/lib/verification-token";
 import { sendPasswordResetEmail } from "@/lib/mail";
 
 const GENERIC_MESSAGE = "If that email is registered, a password reset link has been sent.";
@@ -22,9 +22,9 @@ export async function POST(request: Request) {
   // avoids account enumeration.
   const user = await prisma.user.findUnique({ where: { email } });
   if (user && !user.deletedAt && user.accountStatus !== "blocked") {
-    const token = generateResetToken();
-    const tokenHash = hashResetToken(token);
-    const expiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+    const token = generateVerificationToken();
+    const tokenHash = hashVerificationToken(token);
+    const expiresAt = new Date(Date.now() + VERIFICATION_TOKEN_TTL_MS);
 
     await prisma.passwordResetToken.create({
       data: { userId: user.id, tokenHash, expiresAt },

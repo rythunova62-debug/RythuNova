@@ -60,13 +60,22 @@ export const translations = {
   "pilotSignup.uploading": { en: "Uploading...", te: "అప్‌లోడ్ అవుతోంది..." },
   "pilotSignup.alreadyHaveAccount": { en: "Already have an account? Log in", te: "ఇప్పటికే ఖాతా ఉందా? లాగిన్ అవ్వండి" },
 
-  "otp.title": { en: "Verify Your Email", te: "మీ ఇమెయిల్‌ని ధృవీకరించండి" },
-  "otp.sentTo": { en: "We sent a 6-digit code to", te: "6-అంకెల కోడ్ పంపబడింది" },
-  "otp.expiresIn": { en: "It expires in 10 minutes.", te: "ఇది 10 నిమిషాల్లో గడువు ముగుస్తుంది." },
-  "otp.verify": { en: "Verify", te: "ధృవీకరించండి" },
-  "otp.verifying": { en: "Verifying...", te: "ధృవీకరిస్తోంది..." },
-  "otp.resend": { en: "Resend OTP", te: "OTP మళ్ళీ పంపండి" },
-  "otp.resendIn": { en: "Resend OTP in", te: "OTP మళ్ళీ పంపడానికి" },
+  "checkEmail.title": { en: "Check Your Email", te: "మీ ఇమెయిల్ చూడండి" },
+  "checkEmail.sentTo": {
+    en: "We sent a verification link to",
+    te: "ధృవీకరణ లింక్ పంపబడింది",
+  },
+  "checkEmail.instructions": {
+    en: "Click the link in that email to continue. It expires in 30 minutes.",
+    te: "కొనసాగించడానికి ఆ ఇమెయిల్‌లోని లింక్‌ని క్లిక్ చేయండి. ఇది 30 నిమిషాల్లో గడువు ముగుస్తుంది.",
+  },
+  "checkEmail.resend": { en: "Resend verification email", te: "ధృవీకరణ ఇమెయిల్ మళ్ళీ పంపండి" },
+  "checkEmail.resendIn": { en: "Resend in", te: "మళ్ళీ పంపడానికి" },
+  "checkEmail.resent": { en: "A new verification email has been sent.", te: "కొత్త ధృవీకరణ ఇమెయిల్ పంపబడింది." },
+  "checkEmail.linkError": {
+    en: "That verification link was invalid or has expired. Please register again or resend below.",
+    te: "ఆ ధృవీకరణ లింక్ చెల్లదు లేదా గడువు ముగిసింది. దయచేసి మళ్ళీ నమోదు చేయండి లేదా కింద మళ్ళీ పంపండి.",
+  },
 
   "credentials.title": { en: "Set Your Password", te: "మీ పాస్‌వర్డ్ సెట్ చేయండి" },
   "credentials.titleWithUsername": { en: "Create Your Credentials", te: "మీ లాగిన్ వివరాలు సృష్టించండి" },

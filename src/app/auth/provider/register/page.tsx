@@ -34,7 +34,7 @@ export default function ProviderRegisterPage() {
         setError(data.error ?? "Registration failed");
         return;
       }
-      router.push(`/auth/provider/verify-otp?email=${encodeURIComponent(form.email)}`);
+      router.push(`/auth/provider/check-email?email=${encodeURIComponent(form.email)}`);
     } finally {
       setLoading(false);
     }

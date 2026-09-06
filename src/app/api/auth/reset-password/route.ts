@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { resetPasswordSchema } from "@/lib/validation";
-import { hashResetToken } from "@/lib/password-reset";
+import { hashVerificationToken } from "@/lib/verification-token";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   }
 
   const { token, password } = parsed.data;
-  const tokenHash = hashResetToken(token);
+  const tokenHash = hashVerificationToken(token);
 
   const resetToken = await prisma.passwordResetToken.findUnique({
     where: { tokenHash },
