@@ -77,12 +77,6 @@ export const createAdminSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-// Step 1 of team-member sign-up only asks for the email; the password comes
-// after the verification link is clicked.
-export const adminRegisterSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-});
-
 // --- Provider portal ---
 
 const username = z

@@ -156,6 +156,9 @@ model ProviderSignupRequest {
   @@map("provider_signup_requests")
 }
 
+// Unused while team sign-up skips verification. Kept (with its migration
+// already applied) so the email-link flow can be switched back on without a
+// schema change once a real outbound mailbox is configured.
 model AdminSignupRequest {
   id                    String   @id @default(cuid())
   email                 String   @unique
