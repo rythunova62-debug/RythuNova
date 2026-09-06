@@ -42,6 +42,13 @@ export default async function AdminDashboardPage() {
             <h2 className="font-medium text-stone-900">Orders</h2>
             <p className="mt-1 text-sm text-stone-500">Farmer bookings, routing, proof videos</p>
           </Link>
+          <Link
+            href="/admin/access-logs"
+            className="rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+          >
+            <h2 className="font-medium text-stone-900">Login & Access</h2>
+            <p className="mt-1 text-sm text-stone-500">Who&apos;s online, login history</p>
+          </Link>
           <div className="rounded-lg border border-stone-200 bg-stone-100 p-6 opacity-60">
             <h2 className="font-medium text-stone-500">Sheets</h2>
             <p className="mt-1 text-sm text-stone-400">Not connected yet</p>
