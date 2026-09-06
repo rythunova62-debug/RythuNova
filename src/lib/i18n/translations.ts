@@ -7,9 +7,8 @@ export const translations = {
     en: "Drone-based crop spraying, connecting West Godavari farmers with trained drone pilots.",
     te: "డ్రోన్ ఆధారిత పంట పిచికారీ — పశ్చిమ గోదావరి రైతులను శిక్షణ పొందిన డ్రోన్ పైలట్లతో కలుపుతుంది.",
   },
-  "home.pilotSignup": { en: "Pilot Signup", te: "పైలట్ నమోదు" },
   "home.pilotLogin": { en: "Pilot Login", te: "పైలట్ లాగిన్" },
-  "home.providerSignup": { en: "Drone Provider Signup", te: "డ్రోన్ ప్రొవైడర్ నమోదు" },
+  "home.providerLogin": { en: "Drone Provider Login", te: "డ్రోన్ ప్రొవైడర్ లాగిన్" },
 
   "common.email": { en: "Email", te: "ఇమెయిల్" },
   "common.password": { en: "Password", te: "పాస్‌వర్డ్" },

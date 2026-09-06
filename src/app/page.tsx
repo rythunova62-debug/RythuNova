@@ -17,22 +17,16 @@ export default function Home() {
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Link
-          href="/auth/pilot/signup"
-          className="rounded-lg bg-emerald-700 px-8 py-3 font-medium text-white shadow-sm transition hover:bg-emerald-800"
-        >
-          {t("home.pilotSignup")}
-        </Link>
-        <Link
           href="/auth/pilot/login"
-          className="rounded-lg border border-emerald-700 px-8 py-3 font-medium text-emerald-800 transition hover:bg-emerald-50"
+          className="rounded-lg bg-emerald-700 px-8 py-3 font-medium text-white shadow-sm transition hover:bg-emerald-800"
         >
           {t("home.pilotLogin")}
         </Link>
         <Link
-          href="/auth/provider/register"
+          href="/auth/provider/login"
           className="rounded-lg border border-emerald-700 px-8 py-3 font-medium text-emerald-800 transition hover:bg-emerald-50"
         >
-          {t("home.providerSignup")}
+          {t("home.providerLogin")}
         </Link>
       </div>
     </main>
