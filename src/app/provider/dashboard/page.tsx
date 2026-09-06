@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import ProviderDashboardHeader, { FleetSection, RosterSection } from "./ProviderDashboardHeader";
 import FleetForm from "./FleetForm";
 import PilotRoster from "./PilotRoster";
+import SceneBackground from "@/components/SceneBackground";
 
 export default async function ProviderDashboardPage() {
   const user = await requireUser("provider");
@@ -17,7 +18,8 @@ export default async function ProviderDashboardPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col bg-emerald-50 px-6 py-10">
+    <main className="relative isolate flex flex-1 flex-col overflow-hidden px-6 py-10">
+      <SceneBackground scene="provider-dashboard" />
       <div className="mx-auto w-full max-w-3xl">
         <ProviderDashboardHeader name={provider.name} email={user.email} />
 

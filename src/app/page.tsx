@@ -9,8 +9,8 @@ export default function Home() {
 
   return (
     <main className="relative isolate flex flex-1 flex-col items-center justify-center gap-10 overflow-hidden px-6 py-12 text-center">
-      <VideoBackground src="/videos/home.mp4" overlayClassName="bg-emerald-950/50" />
-      <div className="flex flex-col gap-3">
+      <VideoBackground src="/videos/home.mp4" />
+      <div className="flex flex-col gap-3 rounded-2xl bg-emerald-950/40 px-8 py-6 backdrop-blur-[2px]">
         <h1
           className="animate-fade-in-up text-4xl font-bold tracking-tight text-white drop-shadow-lg sm:text-5xl"
           style={{ animationDelay: "100ms" }}
@@ -18,7 +18,7 @@ export default function Home() {
           {t("home.title")}
         </h1>
         <p
-          className="animate-fade-in-up max-w-md text-balance text-emerald-50 drop-shadow"
+          className="animate-fade-in-up max-w-md text-balance text-white/95 drop-shadow"
           style={{ animationDelay: "220ms" }}
         >
           {t("home.tagline")}

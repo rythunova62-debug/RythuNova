@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import VideoBackground from "@/components/VideoBackground";
+import PaddyRow from "@/components/PaddyRow";
 
 function PilotLoginForm() {
   const router = useRouter();
@@ -42,9 +43,10 @@ function PilotLoginForm() {
   return (
     <main className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16">
       <VideoBackground src="/videos/pilot-login.mp4" />
-      <div className="w-full max-w-sm rounded-xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-md">
-        <h1 className="mb-1 text-2xl font-semibold text-emerald-900">{t("pilotLogin.title")}</h1>
-        <p className="mb-6 text-sm text-emerald-700">{t("pilotLogin.subtitle")}</p>
+      <PaddyRow />
+      <div className="w-full max-w-[17rem] rounded-xl border border-white/60 bg-white/90 p-5 shadow-xl backdrop-blur-md">
+        <h1 className="mb-1 text-xl font-semibold text-emerald-900">{t("pilotLogin.title")}</h1>
+        <p className="mb-4 text-xs text-emerald-700">{t("pilotLogin.subtitle")}</p>
 
         {justCreated && (
           <p className="mb-4 rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
@@ -52,8 +54,8 @@ function PilotLoginForm() {
           </p>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <label className="flex flex-col gap-1 text-xs font-medium text-stone-700">
             {t("common.email")}
             <input
               type="email"
@@ -63,7 +65,7 @@ function PilotLoginForm() {
               className="rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-stone-700">
+          <label className="flex flex-col gap-1 text-xs font-medium text-stone-700">
             {t("common.password")}
             <input
               type="password"
@@ -85,7 +87,7 @@ function PilotLoginForm() {
           </button>
         </form>
 
-        <div className="mt-6 flex flex-col items-center gap-2 text-sm">
+        <div className="mt-4 flex flex-col items-center gap-1.5 text-xs">
           <Link href="/auth/pilot/signup" className="text-emerald-700 hover:underline">
             {t("pilotLogin.newPilot")}
           </Link>

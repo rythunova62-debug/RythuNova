@@ -3,6 +3,7 @@
 import Link from "next/link";
 import LogoutButton from "@/components/LogoutButton";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
+import SceneBackground from "@/components/SceneBackground";
 
 type PilotData = {
   name: string;
@@ -35,7 +36,8 @@ export default function PilotDashboardContent({ pilot, email }: { pilot: PilotDa
   const status = statusCopy[pilot.verificationStatus] ?? statusCopy.pending;
 
   return (
-    <main className="flex flex-1 flex-col bg-emerald-50 px-6 py-10">
+    <main className="relative isolate flex flex-1 flex-col overflow-hidden px-6 py-10">
+      <SceneBackground scene="pilot-dashboard" />
       <div className="mx-auto w-full max-w-2xl">
         <div className="mb-8 flex items-center justify-between">
           <div>

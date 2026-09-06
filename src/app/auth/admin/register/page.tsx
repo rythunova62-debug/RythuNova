@@ -5,28 +5,37 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SceneBackground from "@/components/SceneBackground";
 
-export default function AdminLoginPage() {
+export default function AdminRegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [joinCode, setJoinCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/admin/login", {
+      const res = await fetch("/api/auth/admin/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, joinCode }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Login failed");
+        setError(data.error ?? "Registration failed");
         return;
       }
+      // The join code stands in for verification, so the account is live now.
       router.push("/admin/dashboard");
       router.refresh();
     } finally {
@@ -38,8 +47,8 @@ export default function AdminLoginPage() {
     <main className="relative isolate flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16">
       <SceneBackground scene="admin-login" />
       <div className="w-full max-w-sm rounded-xl border border-white/15 bg-slate-900/70 p-8 shadow-2xl backdrop-blur-md">
-        <h1 className="mb-1 text-2xl font-semibold text-white">Admin Login</h1>
-        <p className="mb-6 text-sm text-emerald-300">RythuNova control room</p>
+        <h1 className="mb-1 text-2xl font-semibold text-white">Register Team Member</h1>
+        <p className="mb-6 text-sm text-emerald-300">Join the RythuNova admin team</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1 text-sm font-medium text-slate-200">
@@ -57,10 +66,32 @@ export default function AdminLoginPage() {
             <input
               type="password"
               required
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="rounded-md border border-white/20 bg-slate-950/50 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
             />
+            <span className="text-xs font-normal text-slate-400">At least 8 characters</span>
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-slate-200">
+            Confirm password
+            <input
+              type="password"
+              required
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="rounded-md border border-white/20 bg-slate-950/50 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-slate-200">
+            Team join code
+            <input
+              required
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              className="rounded-md border border-white/20 bg-slate-950/50 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            />
+            <span className="text-xs font-normal text-slate-400">Ask an existing admin for this</span>
           </label>
 
           {error && <p className="text-sm text-red-400">{error}</p>}
@@ -70,16 +101,13 @@ export default function AdminLoginPage() {
             disabled={loading}
             className="btn-glow mt-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Creating account..." : "Create account"}
           </button>
         </form>
 
         <div className="mt-6 flex flex-col items-center gap-2 text-sm">
-          <Link href="/auth/admin/register" className="text-emerald-300 hover:underline">
-            New team member? Register
-          </Link>
-          <Link href="/auth/forgot-password" className="text-emerald-300 hover:underline">
-            Forgot password?
+          <Link href="/auth/admin/login" className="text-emerald-300 hover:underline">
+            Already on the team? Sign in
           </Link>
           <Link href="/" className="text-slate-400 hover:text-slate-200">
             Back to home

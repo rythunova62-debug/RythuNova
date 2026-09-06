@@ -77,6 +77,12 @@ export const createAdminSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+// Self-registration stands in for an invite: instead of verifying the email we
+// ask for the shared team join code, so a leaked URL alone is not enough.
+export const registerAdminSchema = createAdminSchema.extend({
+  joinCode: z.string().min(1, "Enter the team join code"),
+});
+
 // --- Provider portal ---
 
 const username = z

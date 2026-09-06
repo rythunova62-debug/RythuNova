@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
 import LogoutButton from "@/components/LogoutButton";
+import SceneBackground from "@/components/SceneBackground";
 
 export default async function AdminDashboardPage() {
   const admin = await requireUser("admin");
@@ -10,7 +11,8 @@ export default async function AdminDashboardPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col bg-stone-50 px-6 py-10">
+    <main className="relative isolate flex flex-1 flex-col overflow-hidden px-6 py-10">
+      <SceneBackground scene="admin-dashboard" />
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
