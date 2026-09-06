@@ -72,6 +72,11 @@ export const ratePilotSchema = z.object({
   rating: z.coerce.number().min(1).max(5),
 });
 
+export const createAdminSchema = z.object({
+  email: z.string().email("Enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
 // --- Provider portal ---
 
 const username = z
